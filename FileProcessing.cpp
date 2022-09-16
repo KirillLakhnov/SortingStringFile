@@ -57,7 +57,7 @@ void ArrayTransferFile (char** p_array_pointer, FILE* text, const int number_str
 {
     for (int i = 0; i < number_string_text; i++)
     {
-        fprintf(text, "%s", *(p_array_pointer + i));
+        fprintf(text, "%s", *(p_array_pointer + i*sizeof(char*)));
     }
 }
 

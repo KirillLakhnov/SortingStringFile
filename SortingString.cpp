@@ -1,7 +1,7 @@
 #include "SortingString.h"
 #include "FileProcessing.h"
 
-void SortingString (char** p_array_pointer, const int number_string_text)
+void SortingStringBuble (char** p_array_pointer, const int number_string_text)
 {  
     for (int i = 0; i < (number_string_text - 1); i++)
     {
@@ -9,18 +9,18 @@ void SortingString (char** p_array_pointer, const int number_string_text)
         {
             if (ComparisonString (*(p_array_pointer+i), *(p_array_pointer+j)) > 0)
             {
-                char* sort_help = *(p_array_pointer+j);
+                char* sort_help = *(p_array_pointer + j);
                 for (int k = j - 1; k >= i; k--)
                 {
-                    *(p_array_pointer+k+1) = *(p_array_pointer+k);
-                    *(p_array_pointer+k) = sort_help;
+                    *(p_array_pointer + (k+1)) = *(p_array_pointer + k);
+                    *(p_array_pointer + k) = sort_help;
                 }
             }      
         }
     }
 }
 
-void SortingStringEnd (char** p_array_pointer, const int number_string_text)
+void SortingStringBubleEnd (char** p_array_pointer, const int number_string_text)
 {  
     for (int i = 0; i < (number_string_text - 1); i++)
     {
@@ -28,11 +28,11 @@ void SortingStringEnd (char** p_array_pointer, const int number_string_text)
         {
             if (ComparisonStringEnd (*(p_array_pointer+i), *(p_array_pointer+j)) > 0)
             {
-                char* sort_help = *(p_array_pointer+j);
+                char* sort_help = *(p_array_pointer + j);
                 for (int k = j - 1; k >= i; k--)
                 {
-                    *(p_array_pointer+k+1) = *(p_array_pointer+k);
-                    *(p_array_pointer+k) = sort_help;
+                    *(p_array_pointer + (k + 1)) = *(p_array_pointer + k);
+                    *(p_array_pointer + k) = sort_help;
                 }
             }      
         }
@@ -74,8 +74,10 @@ int ComparisonStringEnd (char* str1, char* str2)
 {
     assert (str1);
     assert (str2);
+
     int i = strlen (str1), j = strlen (str2);
     int str_i = NAN, str_j = NAN;
+
     while (i >= 0 && j >= 0)
     {
         int str_i = i+1;

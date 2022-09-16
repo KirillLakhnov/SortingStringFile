@@ -11,12 +11,12 @@ int main()
 
     fclose (text);
 
-    SortingString (p_array_pointer, number_string_text);
+    SortingStringBuble (p_array_pointer, number_string_text);
 
-    //for (int i = 0; i < number_string_text; i++)
-    //{
-    //    printf("%s", *(p_array_pointer + i));
-    //}
+    for (int i = 0; i < number_string_text; i++)
+    {
+        printf("%s", *(p_array_pointer + i));
+    }
 
     //FILE* text_end = fopen ("TextEnd.txt", "a");
     //ArrayTransferFile (p_array_pointer, text_end, number_string_text);

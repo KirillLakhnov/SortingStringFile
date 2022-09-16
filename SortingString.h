@@ -12,9 +12,9 @@ const int DIFFERENCE_UPPER_LOWER_LETTERS = 32;
 
 char* Gets (FILE* text);
 
-void SortingString (char** p_array_pointer, int number_string_text);
+void SortingStringBuble (char** p_array_pointer, int number_string_text);
 
-void SortingStringEnd (char** p_array_pointer, const int number_string_text);
+void SortingStringBubleEnd (char** p_array_pointer, const int number_string_text);
 
 int ComparisonString (char* str1, char* str2);
 
