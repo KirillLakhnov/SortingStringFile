@@ -3,24 +3,43 @@
 
 int main()
 {
-    FILE* text = fopen ("Text.txt", "r");
+    char file_name[] = "Text.txt";
+    size_t size_file = 0;
+    int number_line_text = NAN;
+    char* file_buffer = nullptr;
+    
+    BufferTxtFileCreate (&size_file, &number_line_text, &file_buffer, file_name);
 
-    char** p_array_pointer = (char**) calloc (STR_NUM, sizeof (char*));
-    int number_string_text = FileTransferArray (text, p_array_pointer);
-    //int number_string_text = FileTransferArrayPlus (text, p_array_pointer);
 
-    fclose (text);
-
-    SortingStringBuble (p_array_pointer, number_string_text);
-
-    for (int i = 0; i < number_string_text; i++)
+    char** file_buffer_array = (char**) calloc (number_line_text, sizeof (char*));
+    for (int i = 0; i < number_line_text; i++)
     {
-        printf("%s", *(p_array_pointer + i));
+        file_buffer_array[i] = (char*) calloc (size_file, sizeof(char));
     }
 
-    //FILE* text_end = fopen ("TextEnd.txt", "a");
-    //ArrayTransferFile (p_array_pointer, text_end, number_string_text);
-    //fclose (text_end);
+    BufferArrayCompletion(file_buffer_array, file_buffer, size_file, number_line_text);
+    
+    /**/for (int i = 0; i < number_line_text; i++)
+    /**/{
+    /**/    printf("%s", file_buffer_array[i]);
+    /**/} 
+
+    char** p_array_pointer = (char**) calloc (number_line_text, sizeof (char*));
+    BufferTransferFile (file_buffer_array, p_array_pointer, number_line_text);
+
+    FILE* text_end = fopen ("TextEnd.txt", "ab");
+
+    BubleSort (p_array_pointer, number_line_text, ComparisonString);
+    ArrayTransferFile (p_array_pointer, text_end, number_line_text);
+    fprintf(text_end, "----------------------------------------------\n");
+
+    BubleSort (p_array_pointer, number_line_text, ComparisonStringEnd);
+    ArrayTransferFile (p_array_pointer, text_end, number_line_text);
+    fprintf(text_end, "----------------------------------------------\n");
+
+    fprintf (text_end, "%s", file_buffer);
+
+    fclose (text_end); 
 
     return 0;
 }
