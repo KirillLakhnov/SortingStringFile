@@ -11,10 +11,10 @@ int LineLen (const char* str)
         lenght_string++;
     }
 
-    return lenght_string;
+    return lenght_string + 1;
 }
 
-void BubleSort (char** p_array_pointer, const int number_line_text, int (*compare) (const void* ,const void*))
+void BubleSortCharPoint (char** p_array_pointer, const int number_line_text, int (*compare) (const void* ,const void*))
 {  
     assert(p_array_pointer);
 
@@ -35,7 +35,7 @@ void BubleSort (char** p_array_pointer, const int number_line_text, int (*compar
     }
 }
 
-void QuickSort (char** p_array_pointer, int number_line_text, int (*compare) (const void* ,const void*))
+void QuickSortCharPoint (char** p_array_pointer, int number_line_text, int (*compare) (const void* ,const void*))
 {
     assert(p_array_pointer);
 
@@ -69,12 +69,57 @@ void QuickSort (char** p_array_pointer, int number_line_text, int (*compare) (co
 
     if (i < number_line_text - 1)
     {
-        QuickSort (p_array_pointer + i, number_line_text - i, compare);
+        QuickSortCharPoint (p_array_pointer + i, number_line_text - i, compare);
     }
     
     if (j > 0)
     {
-        QuickSort (p_array_pointer, j+1, compare);
+        QuickSortCharPoint (p_array_pointer, j+1, compare);
+    }
+}
+
+void QuickSortVoid (void* array, size_t size_array, size_t size_type, int (*compare) (const void* ,const void*))
+{
+    int i = 0;
+    int j = (int) size_array - 1;
+    char* middle_array = (char*)array + (size_array/2) * size_type ;
+
+    do
+    {
+        while (compare ((void*)((char*)array + i*size_type), (void*)middle_array) < 0)
+        {
+            i++;
+        }
+        while (compare ((void*)((char*)array + j*size_type), (void*)(middle_array)) > 0)
+        {
+            j--;
+        }
+
+        if (i <= j)
+        {
+            void* sort_help = calloc (1 , size_type);
+            memcpy(sort_help, (void*)((char*)array + i*size_type), size_type);
+            memcpy((void*)((char*)array + i*size_type), (void*)((char*)array + j*size_type), size_type);
+            memcpy((void*)((char*)array + j*size_type), sort_help, size_type);
+            //char* sort_help = (char*)array + i*size_type;
+            //*((char*)array + i*size_type) = *((char*)array + j*size_type);
+            //*((char*)array + j*size_type) = *sort_help;
+
+            i++;
+            j--;
+        }
+    } 
+    while (i <= j)
+        ;
+
+    if (i < size_array - 1)
+    {
+        QuickSortVoid ((void*)((char*)array + i*size_type), size_array - i, size_type, compare);
+    }
+    
+    if (j > 0)
+    {
+        QuickSortVoid (array, j+1, size_type, compare);
     }
 }
 

@@ -3,19 +3,17 @@
 
 int main()
 {
-    char file_name[] = "Hamlet.txt";
-    size_t size_file = 0;
-    int number_line_text = 0;
-    char* file_buffer = nullptr;
+    struct Text text_info = {};
+    struct FileInfo file_info = {.file_name = "text.txt"};
 
-    BufferTxtFileCreate (&size_file, &number_line_text, &file_buffer, file_name);
+    BufferTxtFileCreate (&file_info, &text_info);
  
-    char** p_array_pointer = (char**) calloc (number_line_text, sizeof (char*));
-    BufferTransferPointer (p_array_pointer, file_buffer, size_file);
+    text_info.p_array_pointer = (char**) calloc (text_info.number_line_text, sizeof (char*));
+    BufferTransferPointer (&text_info);
 
-    PutcTextOnFile (p_array_pointer, number_line_text, file_buffer);
+    PutcTextOnFile (&file_info, &text_info);
 
-    FreeBuffer (p_array_pointer, file_buffer);
+    FreeBuffer (&text_info);
 
     return 0;
 }
