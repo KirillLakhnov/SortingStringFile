@@ -3,43 +3,19 @@
 
 int main()
 {
-    char file_name[] = "Text.txt";
+    char file_name[] = "Hamlet.txt";
     size_t size_file = 0;
-    int number_line_text = NAN;
+    int number_line_text = 0;
     char* file_buffer = nullptr;
-    
+
     BufferTxtFileCreate (&size_file, &number_line_text, &file_buffer, file_name);
-
-
-    char** file_buffer_array = (char**) calloc (number_line_text, sizeof (char*));
-    for (int i = 0; i < number_line_text; i++)
-    {
-        file_buffer_array[i] = (char*) calloc (size_file, sizeof(char));
-    }
-
-    BufferArrayCompletion(file_buffer_array, file_buffer, size_file, number_line_text);
-    
-    /**/for (int i = 0; i < number_line_text; i++)
-    /**/{
-    /**/    printf("%s", file_buffer_array[i]);
-    /**/} 
-
+ 
     char** p_array_pointer = (char**) calloc (number_line_text, sizeof (char*));
-    BufferTransferFile (file_buffer_array, p_array_pointer, number_line_text);
+    BufferTransferPointer (p_array_pointer, file_buffer, size_file);
 
-    FILE* text_end = fopen ("TextEnd.txt", "ab");
+    PutcTextOnFile (p_array_pointer, number_line_text, file_buffer);
 
-    BubleSort (p_array_pointer, number_line_text, ComparisonString);
-    ArrayTransferFile (p_array_pointer, text_end, number_line_text);
-    fprintf(text_end, "----------------------------------------------\n");
-
-    BubleSort (p_array_pointer, number_line_text, ComparisonStringEnd);
-    ArrayTransferFile (p_array_pointer, text_end, number_line_text);
-    fprintf(text_end, "----------------------------------------------\n");
-
-    fprintf (text_end, "%s", file_buffer);
-
-    fclose (text_end); 
+    FreeBuffer (p_array_pointer, file_buffer);
 
     return 0;
 }

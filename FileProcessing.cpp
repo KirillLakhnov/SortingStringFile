@@ -1,13 +1,14 @@
 #include "FileProcessing.h"
+#include "SortingString.h"
 
 int SizeFile (FILE* text, size_t* size_file)
 {
     if (fseek (text, 0, SEEK_END) != 0)
     {
         return ERROR_FSEEK;
-    };
+    }
 
-    *size_file = ftell(text);
+    *size_file = ftell (text);
     if (!(*size_file))
     {
         return ERROR_FTELL;
@@ -33,7 +34,7 @@ int NumberLineText (char* file_buffer, size_t size_file)
     return (file_buffer[size_file - 1] == '\n') ? (number_line_text) : (number_line_text + 1);
 }
 
-int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_buffer, char* file_name)
+int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_buffer, const char* file_name)
 {
     FILE* text = fopen (file_name, "rb");
     if (!text)
@@ -41,7 +42,7 @@ int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_b
         return ERROR_FILE_OPEN;
     }
 
-    *size_file = SizeFile (text, size_file);
+    SizeFile (text, size_file);
 
     *file_buffer = (char*) calloc (*size_file, sizeof (char));
     if (!(*file_buffer))
@@ -52,7 +53,7 @@ int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_b
     }
 
     size_t count_simbols = fread (*file_buffer, sizeof (char), *size_file, text);
-    if (count_simbols != (size_t)size_file)
+    if (count_simbols != *size_file)
     {
         free (*file_buffer);
         fclose (text);
@@ -61,7 +62,7 @@ int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_b
 
     *number_line_text = NumberLineText (*file_buffer, *size_file);
 
-    if (!fclose (text))
+    if (fclose (text) != 0)
     {
         free (*file_buffer);
         return ERROR_FILE_CLOSE;
@@ -70,42 +71,97 @@ int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_b
     return GOOD_WORKING;
 }
 
-void BufferArrayCompletion(char** file_buffer_array, char* file_buffer, size_t size_file, int number_line_text)
+void BufferTransferPointer (char** p_array_pointer, char* file_buffer, size_t size_file)
 {
-    int counter = 0;
-    for (int i = 0; (i < number_line_text) && (counter < size_file); i++)
-    {
-        int j = 0;
-        while ((file_buffer[counter] != '\n') && (j < size_file))
-        {
-            file_buffer_array[i][j] = file_buffer[counter];
-            counter++;
-            j++;
-        }
-        if (file_buffer[counter] == '\n')
-        {
-            file_buffer_array[i][j] = '\n';
-            j++;
-            file_buffer_array[i][j] = '\0';
-            counter++;
-            j++;
-        }
-    }
-}
+    assert(file_buffer);
 
-void BufferTransferFile (char** file_buffer_array, char** p_array_pointer, int number_line_text)
-{
-    for (int i = 0; i < number_line_text; i++)
+    int counter = 0;
+    for (int i = 0; i < size_file; i++)
     {
-        *(p_array_pointer + i) = *(file_buffer_array + i);
+        if (i == 0)
+        {
+            p_array_pointer[counter] = file_buffer + i;
+            counter++;
+        }
+        else if (file_buffer[i-1] == '\n')
+        {
+            p_array_pointer[counter] = file_buffer + i;
+            counter++;  
+        }
     }
 }
 
 void ArrayTransferFile (char** p_array_pointer, FILE* text, const int number_string_text)
 {
+    assert(p_array_pointer);
+
     for (int i = 0; i < number_string_text; i++)
     {
-        fprintf(text, "%s", *(p_array_pointer + i*sizeof(char)));
+        int j = 0;
+        while ((*(p_array_pointer[i] + j) != '\n'))
+        {
+            fputc (*(p_array_pointer[i] + j), text);
+            j++;
+            if (*(p_array_pointer[i] + j) == '\0')
+            {
+                break;
+            }
+        }
+
+        fputc ('\n', text);
     }
 }
+
+int PutcTextOnFile (char** p_array_pointer, int number_line_text, char* file_buffer)
+{
+    assert(p_array_pointer);
+    assert(file_buffer);
+
+    FILE* text_end = fopen ("TextEnd.txt", "ab");
+    if (!text_end)
+    {
+        FreeBuffer (p_array_pointer, file_buffer);
+        return ERROR_FILE_OPEN;
+    }
+
+    QuickSort (p_array_pointer, number_line_text, ComparisonString);
+    //BubleSort (p_array_pointer, number_line_text, ComparisonString);
+    ArrayTransferFile (p_array_pointer, text_end, number_line_text);
+    if (fprintf(text_end, "----------------------------------------------\n") < 0)
+    {
+        FreeBuffer (p_array_pointer, file_buffer);
+        return ERROR_FPRINTF;
+    }
+
+    QuickSort (p_array_pointer, number_line_text, ComparisonStringEnd);
+    //BubleSort (p_array_pointer, number_line_text, ComparisonStringEnd);
+    ArrayTransferFile (p_array_pointer, text_end, number_line_text);
+    if (fprintf(text_end, "----------------------------------------------\n") < 0)
+    {
+        FreeBuffer (p_array_pointer, file_buffer);
+        return ERROR_FPRINTF;
+    }
+
+    if (fprintf (text_end, "%s", file_buffer) < 0)
+    {
+        FreeBuffer (p_array_pointer, file_buffer);
+        return ERROR_FPRINTF;
+    }
+
+    if (fclose (text_end) != 0)
+    {
+        FreeBuffer (p_array_pointer, file_buffer);
+        return ERROR_FILE_CLOSE;
+    }
+
+    return GOOD_WORKING;
+}
+
+void FreeBuffer (char** p_array_pointer, char* file_buffer)
+{
+    free(p_array_pointer);
+    free(file_buffer);
+}
+
+
 

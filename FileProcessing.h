@@ -15,6 +15,7 @@ enum ERROR_FILE_PROCESSING {
     ERROR_FILE_CLOSE   = 4,
     ERROR_FSEEK        = 5,
     ERROR_FTELL        = 6,
+    ERROR_FPRINTF      = 7,
 };
 
 struct Text {
@@ -26,19 +27,21 @@ struct Text {
 
 struct FileInfo {
     FILE* text;
-    char* file_name;
+    const char* file_name;
 };
 
 int SizeFile (FILE* text, size_t* size_file);
 
-int NumberLineText (struct Text* text);
+int NumberLineText (char* file_buffer, size_t size_file);
 
-int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_buffer, char* file_name);
+int BufferTxtFileCreate (size_t* size_file, int* number_line_text, char** file_buffer, const char* file_name);
 
-void BufferArrayCompletion(char** file_buffer_array, char* file_buffer, size_t size_file, int number_line_text);
-
-void BufferTransferFile (char** file_buffer_array, char** p_array_pointer, int number_line_text);
+void BufferTransferPointer (char** p_array_pointer, char* file_buffer, size_t size_file);
 
 void ArrayTransferFile (char** p_array_pointer, FILE* text, const int number_string_text);
+
+int PutcTextOnFile (char** p_array_pointer, int number_line_text, char* file_buffer);
+
+void FreeBuffer (char** p_array_pointer, char* file_buffer);
 
 #endif //FILE_PROCESSING_H
