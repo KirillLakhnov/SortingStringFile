@@ -1,64 +1,48 @@
 #include "SortingString.h"
 #include "FileProcessing.h"
 
-int LineLen (const char* str)
-{
-    assert (str);
-
-    int lenght_string = 0;
-    while (str[lenght_string] != '\n')
-    {
-        lenght_string++;
-    }
-
-    return lenght_string + 1;
-}
-
-void BubleSortCharPoint (char** p_array_pointer, const int number_line_text, int (*compare) (const void* ,const void*))
+void BubleSortCharPointStruct (struct LinePointerLength* line_info, const int number_line_text, int (*compare) (const void* ,const void*))
 {  
-    assert(p_array_pointer);
-
     for (int i = 0; i < (number_line_text - 1); i++)
     {
         for (int j = i + 1; j < number_line_text; j++)
         {
-            if (compare ((void*)(*(p_array_pointer + i)), (void*)(*(p_array_pointer + j))) > 0)
+            if (compare ((void*)(line_info[i].pointer_line), (void*)(line_info[j].pointer_line)) > 0)
             {
-                char* sort_help = *(p_array_pointer + j);
+                char* sort_help = line_info[j].pointer_line;
                 for (int k = j - 1; k >= i; k--)
                 {
-                    *(p_array_pointer + (k+1)) = *(p_array_pointer + k);
-                    *(p_array_pointer + k) = sort_help;
+                    line_info[k+1].pointer_line = line_info[k].pointer_line;
+                    line_info[k].pointer_line = sort_help;
                 }
             }      
         }
     }
 }
 
-void QuickSortCharPoint (char** p_array_pointer, int number_line_text, int (*compare) (const void* ,const void*))
+void QuickSortCharPointStruct (struct LinePointerLength* line_info, int number_line_text, int (*compare) (const void* ,const void*))
 {
-    assert(p_array_pointer);
 
     int i = 0;
     int j = number_line_text - 1;
-    char* middle_array = *(p_array_pointer + (number_line_text/2));
+    char* middle_array = line_info[(number_line_text/2)].pointer_line;
 
     do
     {
-        while (compare ((void*)(*(p_array_pointer + i)), (void*)(middle_array)) < 0)
+        while (compare ((void*)(line_info[i].pointer_line), (void*)(middle_array)) < 0)
         {
             i++;
         }
-        while (compare ((void*)(*(p_array_pointer + j)), (void*)(middle_array)) > 0)
+        while (compare ((void*)(line_info[j].pointer_line), (void*)(middle_array)) > 0)
         {
             j--;
         }
 
         if (i <= j)
         {
-            char* sort_help = *(p_array_pointer + i);
-            *(p_array_pointer + i) = *(p_array_pointer + j);
-            *(p_array_pointer + j) = sort_help;
+            char* sort_help = line_info[i].pointer_line;
+            line_info[i].pointer_line = line_info[j].pointer_line;
+            line_info[j].pointer_line = sort_help;
 
             i++;
             j--;
@@ -69,12 +53,12 @@ void QuickSortCharPoint (char** p_array_pointer, int number_line_text, int (*com
 
     if (i < number_line_text - 1)
     {
-        QuickSortCharPoint (p_array_pointer + i, number_line_text - i, compare);
+        QuickSortCharPointStruct (&line_info[i], number_line_text - i, compare);
     }
     
     if (j > 0)
     {
-        QuickSortCharPoint (p_array_pointer, j+1, compare);
+        QuickSortCharPointStruct (line_info, j+1, compare);
     }
 }
 
@@ -132,7 +116,7 @@ int ComparisonString (const void* str1, const void* str2)
     //char* str_2 = *(char**)str2;
 
     int i = 0, j = 0;
-    while (*((char*)(str1) + i) != '\n' && *((char*)(str2) + j) != '\n')
+    while (*((char*)(str1) + i) != '\0' && *((char*)(str2) + j) != '\0')
     {
         while (isalpha (*((char*)(str1) + i)) == 0)
         {
@@ -161,13 +145,14 @@ int ComparisonStringEnd (const void* str1, const void* str2)
     assert (str1);
     assert (str2);
 
-    int i = LineLen ((char*)str1), j = LineLen ((char*)str2);
+    int i = strlen ((char*)str1), j = strlen ((char*)str2);
     int str_i = NAN, str_j = NAN;
 
     while (i >= 0 && j >= 0)
     {
         int str_i = i+1;
         int str_j = j+1;
+        
         while (isalpha (*((char*)(str1) + i)) == 0)
         {
             i--;

@@ -3,6 +3,8 @@
 
 int SizeFile (struct FileInfo* file_info, struct Text* text_info)
 {
+    assert(file_info->text);
+
     if (fseek (file_info->text, 0, SEEK_END) != 0)
     {
         return ERROR_FSEEK;
@@ -23,26 +25,43 @@ int SizeFile (struct FileInfo* file_info, struct Text* text_info)
 
 int NumberLineText (struct Text* text_info)
 {
+    assert(text_info->file_buffer);
+
+    text_info->line_info = (struct LinePointerLength*) calloc (text_info->number_line_text + 1, sizeof(LinePointerLength));
     int number_line_text = 0;
+    int length_line = 0;
+    
     for (int i = 0; i < text_info->size_file; i++)
     {
         if (text_info->file_buffer[i] == '\n')
         {
+            length_line++;
+            text_info->line_info[number_line_text].length = length_line;
+            length_line = 0;
+
             number_line_text++;
+            text_info->file_buffer[i] = '\0';
+        }
+        else
+        {
+            length_line++;
         }
     }
+
     return (text_info->file_buffer[text_info->size_file - 1] == '\n') ? (number_line_text) : (number_line_text + 1);
 }
 
-int BufferTextFileCreater (struct FileInfo* file_info, struct Text* text_info)
+int TextCtor (struct FileInfo* file_info, struct Text* text_info)
 {
+    assert(file_info->file_name);
+
     file_info->text = fopen (file_info->file_name, "rb");
     if (!file_info->text)
     {
         return ERROR_FILE_OPEN;
     }
 
-    SizeFile (file_info, text_info);
+    SizeFile (file_info, text_info); 
 
     text_info->file_buffer = (char*) calloc (text_info->size_file + 1, sizeof (char));
     if (!(text_info->file_buffer))
@@ -59,8 +78,6 @@ int BufferTextFileCreater (struct FileInfo* file_info, struct Text* text_info)
         return ERROR_READING_FILE;
     }
 
-    text_info->number_line_text = NumberLineText (text_info);
-
     if (fclose (file_info->text) != 0)
     {
         free (text_info->file_buffer);
@@ -73,91 +90,73 @@ int BufferTextFileCreater (struct FileInfo* file_info, struct Text* text_info)
 void BufferTransferPointer (struct Text* text_info)
 {
     assert(text_info->file_buffer);
+    assert(text_info->line_info);
 
     int counter = 0;
-    for (int i = 0; i < text_info->size_file; i++)
+    for (int i = 0; i < text_info->number_line_text; i++)
     {
-        if (i == 0)
-        {
-            text_info->p_array_pointer[counter] = text_info->file_buffer + i;
-            counter++;
-        }
-        else if (text_info->file_buffer[i-1] == '\n')
-        {
-            text_info->p_array_pointer[counter] = text_info->file_buffer + i;
-            counter++;  
-        }
+        text_info->line_info[i].pointer_line = text_info->file_buffer + counter;
+        counter += (text_info->line_info[i].length);
     }
 }
 
-void ArrayTransferFile (FILE* text_end, struct Text* text_info)
+int ArrayTransferFile (FILE* text_end, struct Text* text_info)
 {
-    assert(text_info->p_array_pointer);
+    assert(text_info->file_buffer);
+    assert(text_info->line_info);
+    assert(text_end);
 
     for (int i = 0; i < text_info->number_line_text; i++)
     {
-        int j = 0;
-        while (j < LineLen(text_info->p_array_pointer[i]))
+        if (fputs (text_info->line_info[i].pointer_line, text_end) < 0 || fputc('\n', text_end) < 0)
         {
-            fputc (*(text_info->p_array_pointer[i] + j), text_end);
-            j++;
-            if (*(text_info->p_array_pointer[i] + j) == '\0')
-            {
-                break;
-            }
+            return ERROR_FPUTS;
         }
     }
+    return GOOD_WORKING;
 }
 
-int PutcTextOnFile (struct FileInfo* file_info, struct Text* text_info)
+int PutcTextOnFile (FILE* text_end, struct FileInfo* file_info, struct Text* text_info)
 {
-    assert(text_info->p_array_pointer);
     assert(text_info->file_buffer);
+    assert(text_info->line_info);
+    assert(text_end);
 
-    FILE* text_end = fopen ("TextEnd.txt", "ab");
-    if (!text_end)
-    {
-        FreeBuffer (text_info);
-        return ERROR_FILE_OPEN;
-    }
-
-    QuickSortCharPoint (text_info->p_array_pointer, text_info->number_line_text, ComparisonString);
+    QuickSortCharPointStruct (text_info->line_info, text_info->number_line_text, ComparisonString);
     ArrayTransferFile (text_end, text_info);
     if (fprintf(text_end, "----------------------------------------------\n") < 0)
     {
-        FreeBuffer (text_info);
         return ERROR_FPRINTF;
     }
 
-    QuickSortCharPoint (text_info->p_array_pointer, text_info->number_line_text, ComparisonStringEnd);
+    QuickSortCharPointStruct (text_info->line_info, text_info->number_line_text, ComparisonStringEnd);
     ArrayTransferFile (text_end, text_info);
     if (fprintf(text_end, "----------------------------------------------\n") < 0)
     {
-        FreeBuffer (text_info);
         return ERROR_FPRINTF;
     }
 
-    if (fprintf (text_end, "%s", text_info->file_buffer) < 0)
+    int counter = 0;
+    for (int i = 0; i < text_info->number_line_text; i++)
     {
-        FreeBuffer (text_info);
-        return ERROR_FPRINTF;
-    }
-
-    if (fclose (text_end) != 0)
-    {
-        FreeBuffer (text_info);
-        return ERROR_FILE_CLOSE;
+        fputs((text_info->file_buffer) + counter, text_end);
+        if(i != text_info->number_line_text -1)
+        {
+            fputc('\n', text_end);
+        }
+        counter += (text_info->line_info[i].length);
     }
 
     return GOOD_WORKING;
 }
 
-void FreeBuffer (struct Text* text_info)
+void TextDtor (struct Text* text_info)
 {
-    free(text_info->p_array_pointer);
+    assert(text_info->file_buffer);
+    assert(text_info->line_info);
+
     free(text_info->file_buffer);
-
-
+    free(text_info->line_info);
 }
 
 
