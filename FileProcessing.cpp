@@ -34,7 +34,7 @@ int NumberLineText (struct Text* text_info)
     return (text_info->file_buffer[text_info->size_file - 1] == '\n') ? (number_line_text) : (number_line_text + 1);
 }
 
-int BufferTxtFileCreate (struct FileInfo* file_info, struct Text* text_info)
+int BufferTextFileCreater (struct FileInfo* file_info, struct Text* text_info)
 {
     file_info->text = fopen (file_info->file_name, "rb");
     if (!file_info->text)
@@ -44,10 +44,9 @@ int BufferTxtFileCreate (struct FileInfo* file_info, struct Text* text_info)
 
     SizeFile (file_info, text_info);
 
-    text_info->file_buffer = (char*) calloc (text_info->size_file, sizeof (char));
+    text_info->file_buffer = (char*) calloc (text_info->size_file + 1, sizeof (char));
     if (!(text_info->file_buffer))
     {
-        free (text_info->file_buffer);
         fclose (file_info->text);
         return ERROR_MEMMORY;
     }
@@ -98,7 +97,7 @@ void ArrayTransferFile (FILE* text_end, struct Text* text_info)
     for (int i = 0; i < text_info->number_line_text; i++)
     {
         int j = 0;
-        while ((*(text_info->p_array_pointer[i] + j) != '\n'))
+        while (j < LineLen(text_info->p_array_pointer[i]))
         {
             fputc (*(text_info->p_array_pointer[i] + j), text_end);
             j++;
@@ -107,8 +106,6 @@ void ArrayTransferFile (FILE* text_end, struct Text* text_info)
                 break;
             }
         }
-
-        fputc ('\n', text_end);
     }
 }
 
@@ -159,6 +156,8 @@ void FreeBuffer (struct Text* text_info)
 {
     free(text_info->p_array_pointer);
     free(text_info->file_buffer);
+
+
 }
 
 

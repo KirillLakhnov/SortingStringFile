@@ -57,7 +57,7 @@ int NumberLineText (struct Text* text_info);
  * @param text_info - pointer to the structure containing the file size and a pointer to the buffer of this file.
  * @return the result of the function execution (0 - successful execution, more than 0 - error).
  */
-int BufferTxtFileCreate (struct FileInfo* file_info, struct Text* text_info);
+int BufferTextFileCreater (struct FileInfo* file_info, struct Text* text_info);
 
 /**
  * @brief BufferTransferPointer - passes the data on the line from the file buffer to the pointer array.

@@ -86,24 +86,24 @@ void QuickSortVoid (void* array, size_t size_array, size_t size_type, int (*comp
 
     do
     {
-        while (compare ((void*)((char*)array + i*size_type), (void*)middle_array) < 0)
+        while (compare (((char*)array + i*size_type), middle_array) < 0)
         {
             i++;
         }
-        while (compare ((void*)((char*)array + j*size_type), (void*)(middle_array)) > 0)
+        while (compare (((char*)array + j*size_type), (middle_array)) > 0)
         {
             j--;
         }
 
         if (i <= j)
         {
-            void* sort_help = calloc (1 , size_type);
-            memcpy(sort_help, (void*)((char*)array + i*size_type), size_type);
-            memcpy((void*)((char*)array + i*size_type), (void*)((char*)array + j*size_type), size_type);
-            memcpy((void*)((char*)array + j*size_type), sort_help, size_type);
-            //char* sort_help = (char*)array + i*size_type;
-            //*((char*)array + i*size_type) = *((char*)array + j*size_type);
-            //*((char*)array + j*size_type) = *sort_help;
+            //void* sort_help = calloc (1 , size_type);
+            //memcpy(sort_help, (void*)((char*)array + i*size_type), size_type);
+            //memcpy((void*)((char*)array + i*size_type), (void*)((char*)array + j*size_type), size_type);
+            //memcpy((void*)((char*)array + j*size_type), sort_help, size_type);
+            char* sort_help = (char*)array + i*size_type;
+            *((char**)array + i*size_type) = *((char**)array + j*size_type);
+            *((char**)array + j*size_type) = sort_help;
 
             i++;
             j--;
@@ -114,7 +114,7 @@ void QuickSortVoid (void* array, size_t size_array, size_t size_type, int (*comp
 
     if (i < size_array - 1)
     {
-        QuickSortVoid ((void*)((char*)array + i*size_type), size_array - i, size_type, compare);
+        QuickSortVoid (((char*)array + i*size_type), size_array - i, size_type, compare);
     }
     
     if (j > 0)
@@ -127,6 +127,9 @@ int ComparisonString (const void* str1, const void* str2)
 {
     assert (str1);
     assert (str2);
+
+    //char* str_1 = *(char**)str1;
+    //char* str_2 = *(char**)str2;
 
     int i = 0, j = 0;
     while (*((char*)(str1) + i) != '\n' && *((char*)(str2) + j) != '\n')
