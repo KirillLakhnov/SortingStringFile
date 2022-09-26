@@ -116,9 +116,7 @@ void QuickSortVoid (void* array, size_t size_array, size_t size_type, int (*comp
 
         if (i <= j)
         {
-            char* sort_help = (char*)array + i*size_type;
-            *((char**)array + i*size_type) = *((char**)array + j*size_type);
-            *((char**)array + j*size_type) = sort_help;
+            Swap ((char*)array + i*size_type, (char*)array + j*size_type, size_type);
 
             i++;
             j--;

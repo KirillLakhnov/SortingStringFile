@@ -35,6 +35,16 @@ void BubleSortCharPointStruct (struct Line* line_info, const int number_line_tex
 void QuickSortCharPointStruct (struct Line* line_info, int number_line_text, int (*compare) (const void* ,const void*));
 
 /**
+ * @brief QuickSortVoid - quick sorting for different data types
+ * 
+ * @param array - pointer to an array
+ * @param size_array - array size
+ * @param size_type - size of the array data type
+ * @param compare - a function comparing two elements of an array
+ */
+void QuickSortVoid (void* array, size_t size_array, size_t size_type, int (*compare) (const void* ,const void*));
+
+/**
  * @brief ComparisonString - compares strings by letters only.
  * 
  * @param struct_line1 - pointer to the comparison element

@@ -159,14 +159,14 @@ int PutcTextOnFile (FILE* text_end, struct FileInfo* file_info, struct Text* tex
     assert(text_info->line_info);
     assert(text_end);
 
-    QuickSortCharPointStruct (text_info->line_info, text_info->number_line_text, ComparisonString);
+    QuickSortVoid (text_info->line_info, text_info->number_line_text, sizeof(*text_info->line_info), ComparisonString);
     ArraySortTransferFile (text_end, text_info);
     if (fprintf(text_end, "----------------------------------------------\n") < 0)
     {
         return ERROR_FPRINTF;
     }
 
-    QuickSortCharPointStruct (text_info->line_info, text_info->number_line_text, ComparisonStringEnd);
+    QuickSortVoid (text_info->line_info, text_info->number_line_text, sizeof(*text_info->line_info), ComparisonStringEnd);
     ArraySortTransferFile (text_end, text_info);
     if (fprintf(text_end, "----------------------------------------------\n") < 0)
     {
