@@ -7,29 +7,49 @@
 #include <assert.h>
 #include <ctype.h>
 #include <math.h>
-
-void BubleSortCharPointStruct (struct LinePointerLength* line_info, const int number_line_text, int (*compare) (const void* ,const void*));
-
-void QuickSortCharPointStruct (struct LinePointerLength* line_info, int number_line_text, int (*compare) (const void* ,const void*));
-
-void QuickSortVoid (void* array, size_t size_array, size_t size_type, int (*compare) (const void* ,const void*));
+/**
+ * @brief Swap - a function that makes a swap of two elements.
+ * 
+ * @param obj1 - swap object
+ * @param obj2 - swap object
+ * @param size_element - size of the transmitted element.
+ */
+void Swap (void* obj1, void* obj2, size_t size_element);
 
 /**
- * @brief ComparisonString - compares lines considering only letters from left to right.
+ * @brief BubleSortCharPointStruct - bubble sorting of an array of structures.
  * 
- * @param str1 - pointer to the line being compared.
- * @param str2 - pointer to the line being compared.
- * @return comparison result.
+ * @param line_info - pointer to an array of structures
+ * @param number_line_text - number of array elements
+ * @param compare - a function comparing two elements of an array
  */
-int ComparisonString (const void* str1, const void* str2);
+void BubleSortCharPointStruct (struct Line* line_info, const int number_line_text, int (*compare) (const void* ,const void*));
 
 /**
- * @brief ComparisonStringEnd - compares lines considering only letters from right to left.
+ * @brief QuickSortCharPointStruct - quick sorting of an array of structures.
  * 
- * @param str1 - pointer to the line being compared.
- * @param str2 - pointer to the line being compared.
- * @return comparison result.
+ * @param line_info - pointer to an array of structures
+ * @param number_line_text - number of array elements
+ * @param compare - a function comparing two elements of an array
  */
-int ComparisonStringEnd (const void* str1, const void* str2);
+void QuickSortCharPointStruct (struct Line* line_info, int number_line_text, int (*compare) (const void* ,const void*));
+
+/**
+ * @brief ComparisonString - compares strings by letters only.
+ * 
+ * @param struct_line1 - pointer to the comparison element
+ * @param struct_line2 - pointer to the comparison element
+ * @return comparison result
+ */
+int ComparisonString (const void* struct_line1, const void* struct_line2);
+
+/**
+ * @brief ComparisonStringEnd - compares strings only by letters from the end.
+ * 
+ * @param struct_line1 - pointer to the comparison element
+ * @param struct_line2 - pointer to the comparison element
+ * @return comparison result
+ */
+int ComparisonStringEnd (const void* struct_line1, const void* struct_line2);
 
 #endif //SORTING_STRING_H

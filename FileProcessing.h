@@ -22,32 +22,50 @@ enum ERROR_FILE_PROCESSING {
     ERROR_FPUTS        = 8,
 };
 
+/**
+ * @brief Text - the structure contains variables related to the original text file and buffer.
+ * 
+ */
 struct Text {
-    size_t size_file;
     char* file_buffer;
+    size_t size_buffer;
+    struct Line* line_info;
     int number_line_text;
-    struct LinePointerLength* line_info;
 };
 
+/**
+ * @brief FileInfo - a structure containing the name of the original file and its size
+ * 
+ */
 struct FileInfo {
-    FILE* text;
     const char* file_name;
+    size_t size_file;
 };
 
-struct LinePointerLength {
+/**
+ * @brief Line - a structure containing a pointer to a string and its length.
+ * 
+ */
+struct Line {
     char* pointer_line;
-    int length;
+    size_t length;
 };
 
 /**
  * @brief SizeFile - finds the file size in bytes.
  * 
- * @param file_info - pointer to the structure containing data about a file.
+ * @param text - text file.
  * @param text_info - pointer to the structure that contains a variable to which the file size is passed.
  * @return the result of the function execution (0 - successful execution, more than 0 - error)
  */
-int SizeFile (struct FileInfo* file_info, struct Text* text_info);
+int SizeFile (FILE* text, struct Text* text_info);
 
+/**
+ * @brief NumberLineText - counts the number of rows and replaces '\n' with '\0'
+ * 
+ * @param text_info - pointer to the structure containing the file size and a pointer to the buffer of this file.
+ * @return number of rows
+ */
 int NumberLineText (struct Text* text_info);
 
 /**
@@ -66,6 +84,22 @@ int TextCtor (struct FileInfo* file_info, struct Text* text_info);
  */
 void BufferTransferPointer (struct Text* text_info);
 
+/** 
+ * @brief ArraySortTransferFile - outputs sorted text to a file
+ * 
+ * @param text_end - the file to which the text is output
+ * @param text_info - pointer to the structure containing data about a text file buffer and an array of pointers.
+ * @return the result of the function execution (0 - successful execution, more than 0 - error).
+ */
+int ArraySortTransferFile (FILE* text_end, struct Text* text_info);
+
+/**
+ * @brief ArrayTransferFile - outputs the original text to a file.
+ * 
+ * @param text_end - the file to which the text is output
+ * @param text_info - pointer to the structure containing data about a text file buffer and an array of pointers.
+ * @return the result of the function execution (0 - successful execution, more than 0 - error).
+ */
 int ArrayTransferFile (FILE* text_end, struct Text* text_info);
 
 /**

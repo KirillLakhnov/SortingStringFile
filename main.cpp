@@ -7,9 +7,6 @@ int main()
     struct FileInfo file_info = {.file_name = "text.txt"};
 
     TextCtor (&file_info, &text_info);
-    text_info.number_line_text = NumberLineText (&text_info);
-
-    BufferTransferPointer (&text_info);
 
     FILE* text_end = fopen ("TextEnd.txt", "ab");
     PutcTextOnFile (text_end, &file_info, &text_info);
