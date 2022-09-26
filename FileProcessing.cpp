@@ -27,17 +27,12 @@ int NumberLineText (struct Text* text_info)
 {
     assert(text_info->file_buffer);
 
-    text_info->line_info = (struct Line*) calloc (text_info->number_line_text + 1, sizeof(Line));
     int number_line_text = 0;
-    int length_line = 0;
     
     for (int i = 0; i <= text_info->size_buffer; i++)
     {
         if (text_info->file_buffer[i] == '\n')
         {
-            text_info->line_info[number_line_text].length = length_line;
-            length_line = 0;
-
             number_line_text++;
             if (i != 1 && text_info->file_buffer[i - 1] == '\r')
             {
@@ -49,20 +44,11 @@ int NumberLineText (struct Text* text_info)
             }
 
         }
-        else if (text_info->file_buffer[i] == '\0')
-        {
-            text_info->line_info[number_line_text].length = length_line;
-        }
-        else
-        {
-            length_line++;
-        }
     }
-
     return (text_info->file_buffer[text_info->size_buffer - 1] == '\n') ? (number_line_text) : (number_line_text + 1);
 }
 
-int TextCtor (struct FileInfo* file_info, struct Text* text_info)
+int BufferCreater (struct FileInfo* file_info, struct Text* text_info)
 {
     assert(file_info->file_name);
 
@@ -95,6 +81,16 @@ int TextCtor (struct FileInfo* file_info, struct Text* text_info)
         return ERROR_FILE_CLOSE;
     }
 
+    return GOOD_WORKING;
+}
+
+int TextCtor (struct FileInfo* file_info, struct Text* text_info)
+{
+    if (BufferCreater (file_info, text_info))
+    {
+        return ERROR_BUFFER_CREATER;
+    }
+
     text_info->number_line_text = NumberLineText (text_info);
 
     BufferTransferPointer (text_info);
@@ -105,7 +101,30 @@ int TextCtor (struct FileInfo* file_info, struct Text* text_info)
 void BufferTransferPointer (struct Text* text_info)
 {
     assert(text_info->file_buffer);
-    assert(text_info->line_info);
+
+    text_info->line_info = (struct Line*) calloc (text_info->number_line_text, sizeof(Line));
+
+    int number_line_text = 0;
+    int length_line = 0;
+    
+    for (int i = 0; i <= text_info->size_buffer; i++)
+    {
+        if (text_info->file_buffer[i] == '\0')
+        {
+            text_info->line_info[number_line_text].length = length_line;
+            length_line = 0;
+
+            number_line_text++;
+        }
+        else if (text_info->file_buffer[i] == '\0')
+        {
+            text_info->line_info[number_line_text].length = length_line;
+        }
+        else
+        {
+            length_line++;
+        }
+    }
 
     int counter = 0;
     for (int i = 0; i < text_info->number_line_text; i++)
@@ -140,12 +159,9 @@ int ArrayTransferFile (FILE* text_end, struct Text* text_info)
         {
             return ERROR_FPUTS;
         }
-        if (i != text_info->number_line_text - 1)
+        if (fputc('\n', text_end) < 0)
         {
-            if (fputc('\n', text_end) < 0)
-            {
-                return ERROR_FPUTS;
-            }
+            return ERROR_FPUTS;
         }
         counter += strlen((text_info->file_buffer + counter)) + 1;
     }
