@@ -42,7 +42,6 @@ int NumberLineText (struct Text* text_info)
             {
                 text_info->file_buffer[i] = '\0';
             }
-
         }
     }
     return (text_info->file_buffer[text_info->size_buffer - 1] == '\n') ? (number_line_text) : (number_line_text + 1);
@@ -71,6 +70,8 @@ int BufferCreater (struct FileInfo* file_info, struct Text* text_info)
     if (count_simbols != text_info->size_buffer)
     {
         free (text_info->file_buffer);
+        text_info->file_buffer = nullptr;
+
         fclose (text);
         return ERROR_READING_FILE;
     }
@@ -78,6 +79,8 @@ int BufferCreater (struct FileInfo* file_info, struct Text* text_info)
     if (fclose (text) != 0)
     {
         free (text_info->file_buffer);
+        text_info->file_buffer = nullptr;
+        
         return ERROR_FILE_CLOSE;
     }
 
@@ -204,6 +207,6 @@ void TextDtor (struct Text* text_info)
 
     text_info->file_buffer = nullptr;
     text_info->line_info = nullptr;
-    text_info->number_line_text = NAN;
-    text_info->size_buffer = NAN;
+    text_info->number_line_text = NULL;
+    text_info->size_buffer = NULL;
 }
