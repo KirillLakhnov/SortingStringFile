@@ -36,7 +36,7 @@ int NumberLineText (struct Text* text_info)
             number_line_text++;
             if (i != 1 && text_info->file_buffer[i - 1] == '\r')
             {
-                text_info->file_buffer[i-1] = '\0';
+                text_info->file_buffer[i - 1] = '\0';
             }
             else
             {

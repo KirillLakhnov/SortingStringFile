@@ -207,9 +207,18 @@ int ComparisonStringEnd (const void* struct_line1, const void* struct_line2)
         }
     }
 
-    if (i < 0 && j < 0) return  0;
-    else if (i < 0)     return  -1;
-    else if (j < 0)     return  1;
+    if (i < 0 && j < 0) 
+    {
+        return  0;
+    }
+    else if (i < 0)     
+    {
+        return  -1;
+    }
+    else if (j < 0)     
+    {
+        return  1;
+    }
     else
     {
         return tolower (str_1[i]) - tolower (str_2[j]);
